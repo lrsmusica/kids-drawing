@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Taller de Dibujo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;800&display=swap">
+<style>
+/* Layout: a sketchbook studio. Home = three numbered units in order; Studio = paper on the left, guide card on the right (stacks on phones). */
+:root {
+  --bg: #eef1fb;
+  --surface: #ffffff;
+  --ink: #1f2240;
+  --muted: #5b6080;
+  --line: #d5d9ec;
+  --accent: #2f5bd8;
+  --accent-soft: #dfe6ff;
+  --accent-ink: #ffffff;
+  --sun: #f7b928;
+  --sun-soft: #fff1c7;
+  --good: #2e9e5b;
+  --paper: #ffffff;
+  --shadow: 0 2px 0 rgba(31,34,64,.08), 0 8px 24px rgba(31,34,64,.08);
+  --font-display: "Fredoka", "Nunito", ui-rounded, "Segoe UI", system-ui, sans-serif;
+  --font-body: "Nunito", ui-rounded, "Segoe UI", system-ui, sans-serif;
+  --radius: 18px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141729; --surface: #1e2238; --ink: #eef0ff; --muted: #a4a9c9; --line: #33395a;
+    --accent: #7d9bff; --accent-soft: #283463; --accent-ink: #0d1030; --sun: #ffc94a; --sun-soft: #3d3420;
+    --good: #5fd08e; --paper: #fffdf8; --shadow: 0 2px 0 rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141729; --surface: #1e2238; --ink: #eef0ff; --muted: #a4a9c9; --line: #33395a;
+  --accent: #7d9bff; --accent-soft: #283463; --accent-ink: #0d1030; --sun: #ffc94a; --sun-soft: #3d3420;
+  --good: #5fd08e; --paper: #fffdf8; --shadow: 0 2px 0 rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 32px;
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1240px; margin: 0 auto; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 52px; padding: 0 22px; border-radius: 999px; border: 2px solid var(--line);
+  background: var(--surface); font-family: var(--font-display); font-weight: 600; font-size: 18px;
+}
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.sunny { background: var(--sun); border-color: var(--sun); color: #2a1f00; }
+.btn.small { min-height: 42px; padding: 0 16px; font-size: 16px; }
+.btn:active { transform: translateY(1px); }
+.btn[disabled] { opacity: .4; cursor: default; }
+
+/* ---------- Home ---------- */
+.hero { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: end; padding-block: 8px 24px; }
+.hero h1 { font-size: clamp(40px, 7vw, 68px); font-weight: 700; letter-spacing: -.01em; }
+.hero h1 .dot { color: var(--sun); }
+.hero p { margin: 8px 0 0; color: var(--muted); font-size: 19px; max-width: 34em; }
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.unit { margin-top: 28px; }
+.unit-head { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; margin-bottom: 14px; }
+.unit-num {
+  width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 28px; background: var(--accent); color: var(--accent-ink);
+}
+.unit:nth-of-type(2) .unit-num { background: var(--sun); color: #2a1f00; }
+.unit:nth-of-type(3) .unit-num { background: var(--good); color: #ffffff; }
+.unit-head h2 { font-size: 30px; }
+.unit-head p { margin: 4px 0 0; color: var(--muted); max-width: 60ch; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.card {
+  text-align: left; background: var(--surface); border: 2px solid var(--line); border-radius: var(--radius);
+  padding: 10px; display: grid; gap: 8px; box-shadow: var(--shadow); position: relative;
+}
+.card:hover { border-color: var(--accent); }
+.card canvas { width: 100%; aspect-ratio: 10 / 7; max-width: 100%; border-radius: 12px; background: var(--paper); display: block; }
+.card .ct { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 0 4px 4px; }
+.card h3 { font-size: 20px; font-weight: 600; }
+.card .meta { color: var(--muted); font-size: 14px; letter-spacing: .02em; }
+.card .tag {
+  position: absolute; top: 18px; left: 18px; background: var(--sun); color: #2a1f00; font-weight: 800;
+  font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px;
+}
+.star { font-size: 26px; line-height: 1; color: var(--line); }
+.star.on { color: var(--sun); }
+.parents {
+  margin-top: 36px; padding: 18px 20px; border-radius: var(--radius); background: var(--sun-soft);
+  display: grid; gap: 6px; max-width: 760px;
+}
+.parents strong { font-family: var(--font-display); font-size: 19px; }
+.parents p { margin: 0; }
+
+/* ---------- Top bar ---------- */
+.topbar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.topbar h2 { font-size: 26px; flex: 1; min-width: 0; }
+.dots { display: flex; gap: 6px; flex-wrap: wrap; }
+.dots i { width: 14px; height: 14px; border-radius: 50%; background: var(--line); display: block; }
+.dots i.done { background: var(--good); }
+.dots i.now { background: var(--accent); transform: scale(1.25); }
+
+/* ---------- Studio ---------- */
+.studio { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 18px; align-items: start; }
+.paper-col { display: grid; gap: 12px; min-width: 0; }
+.paper {
+  position: relative; width: 100%; max-width: 100%; aspect-ratio: 10 / 7; background: var(--paper);
+  border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; touch-action: none;
+  margin-inline: auto;
+}
+@media (min-width: 900px) {
+  .paper { width: min(100%, calc((100vh - 250px) * 10 / 7)); min-width: 480px; }
+}
+.paper canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.paper canvas.top { touch-action: none; cursor: crosshair; }
+.toolbar {
+  display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; background: var(--surface);
+  border: 2px solid var(--line); border-radius: var(--radius); padding: 10px 12px;
+}
+.group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.tool {
+  min-width: 56px; height: 56px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface);
+  display: grid; place-items: center; padding: 4px 8px; font-size: 12px; font-weight: 800; letter-spacing: .02em;
+}
+.tool svg { width: 26px; height: 26px; }
+.tool[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.swatch {
+  width: 38px; height: 38px; border-radius: 50%; border: 3px solid var(--surface);
+  box-shadow: 0 0 0 2px var(--line); padding: 0;
+}
+.swatch[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--accent); transform: scale(1.1); }
+.size { width: 44px; height: 44px; border-radius: 12px; border: 2px solid var(--line); background: var(--surface); display: grid; place-items: center; }
+.size span { background: var(--ink); border-radius: 50%; display: block; }
+.size[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+
+.guide-card {
+  background: var(--surface); border: 2px solid var(--line); border-radius: var(--radius); padding: 18px;
+  display: grid; gap: 14px; box-shadow: var(--shadow);
+}
+.step-label { font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.say { font-family: var(--font-display); font-size: 25px; font-weight: 600; line-height: 1.25; margin: 0; }
+.tip { margin: 0; color: var(--muted); }
+.chip {
+  display: inline-flex; gap: 8px; align-items: center; justify-self: start; padding: 6px 12px; border-radius: 999px;
+  background: var(--sun-soft); font-weight: 800; font-size: 15px;
+}
+.model { display: grid; gap: 6px; }
+.model canvas { width: 100%; aspect-ratio: 10 / 7; max-width: 100%; border-radius: 10px; background: var(--paper); border: 2px solid var(--line); display: block; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg); border-radius: 999px; padding: 4px; gap: 4px; }
+.seg button { border: 0; background: transparent; min-height: 42px; border-radius: 999px; font-weight: 800; }
+.seg button[aria-pressed="true"] { background: var(--surface); box-shadow: var(--shadow); }
+.nav { display: grid; grid-template-columns: auto 1fr; gap: 10px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.check { display: inline-flex; gap: 8px; align-items: center; font-weight: 600; color: var(--muted); }
+.check input { width: 22px; height: 22px; accent-color: var(--accent); }
+
+@media (max-width: 899px) {
+  .studio { grid-template-columns: minmax(0, 1fr); }
+  .guide-card { order: -1; }
+  .guide-card .model { display: none; }
+  .guide-card.copy .model { display: grid; }
+  .say { font-size: 22px; }
+}
+
+/* ---------- Labs ---------- */
+.lab { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 18px; align-items: start; }
+.lab .paper canvas { cursor: grab; }
+@media (max-width: 899px) { .lab { grid-template-columns: minmax(0, 1fr); } }
+.lab-msg { font-family: var(--font-display); font-size: 22px; font-weight: 600; margin: 0; line-height: 1.3; }
+.legend { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.legend li { display: grid; grid-template-columns: 18px 1fr; gap: 10px; align-items: start; }
+.legend b { width: 18px; height: 18px; border-radius: 5px; display: block; margin-top: 3px; border: 1px solid var(--line); }
+
+/* ---------- Gallery ---------- */
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.gitem { background: var(--surface); border: 2px solid var(--line); border-radius: var(--radius); padding: 8px; display: grid; gap: 8px; }
+.gitem img { width: 100%; aspect-ratio: 10 / 7; object-fit: cover; border-radius: 10px; background: var(--paper); display: block; cursor: zoom-in; }
+.gitem .row { justify-content: space-between; padding: 0 4px; }
+.gitem small { color: var(--muted); }
+.empty { padding: 40px 20px; text-align: center; color: var(--muted); background: var(--surface); border: 2px dashed var(--line); border-radius: var(--radius); }
+.empty strong { display: block; font-family: var(--font-display); font-size: 22px; color: var(--ink); margin-bottom: 6px; }
+
+/* ---------- Overlays ---------- */
+.overlay {
+  position: fixed; inset: 0; z-index: 50; background: rgba(15,18,40,.55); display: grid; place-items: center;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+.dialog { background: var(--surface); border-radius: 24px; padding: 28px; max-width: 460px; width: 100%; text-align: center; display: grid; gap: 14px; box-shadow: var(--shadow); }
+.dialog h2 { font-size: 40px; }
+.dialog .stars { font-size: 52px; color: var(--sun); letter-spacing: 6px; }
+.dialog .row { justify-content: center; }
+.viewer img { max-width: min(92vw, 1100px); max-height: 82vh; border-radius: 14px; background: var(--paper); }
+#confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 60; }
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  background: var(--ink); color: var(--bg); padding: 12px 20px; border-radius: 999px; font-weight: 800; z-index: 70;
+  max-width: calc(100% - 32px); text-align: center;
+}
+@media (max-width: 560px) {
+  .hero { grid-template-columns: 1fr; }
+  .tool { min-width: 50px; height: 50px; }
+  .swatch { width: 34px; height: 34px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ================= HOME ================= -->
+<section id="v-home">
+  <header class="hero">
+    <div>
+      <h1>Taller de Dibujo<span class="dot">.</span></h1>
+      <p>Aprende a dibujar paso a paso: primero por partes, después con luz y sombra, y al final en perspectiva.</p>
+    </div>
+    <div class="hero-actions">
+      <button class="btn primary" id="go-free" type="button">Dibujo libre</button>
+      <button class="btn" id="go-gallery" type="button">Mi galería</button>
+    </div>
+  </header>
+
+  <section class="unit">
+    <div class="unit-head"><div class="unit-num">1</div><div>
+      <h2>Dibujar por partes</h2>
+      <p>Todo dibujo se arma con figuras fáciles: círculos, óvalos, triángulos y cuadrados. Primero las figuras grandes, después los detalles.</p>
+    </div></div>
+    <div class="cards" id="cards-partes"></div>
+  </section>
+
+  <section class="unit">
+    <div class="unit-head"><div class="unit-num">2</div><div>
+      <h2>Luz y sombra</h2>
+      <p>La luz viaja en línea recta. Lo que mira al sol se ve clarito, lo que le da la espalda se ve oscuro, y cada cosa deja su sombra en el piso.</p>
+    </div></div>
+    <div class="cards" id="cards-luz"></div>
+  </section>
+
+  <section class="unit">
+    <div class="unit-head"><div class="unit-num">3</div><div>
+      <h2>Perspectiva</h2>
+      <p>Lo que está lejos se ve más pequeño. Las líneas que se alejan se juntan en un punto del horizonte: el punto de fuga.</p>
+    </div></div>
+    <div class="cards" id="cards-persp"></div>
+  </section>
+
+  <aside class="parents">
+    <strong>Para los papás</strong>
+    <p>Una lección al día es suficiente. La primera vez siéntense juntos y usen el modo <b>Calcar</b>, que muestra la línea punteada para seguir con el dedo. Cuando le salga fácil, cambien a <b>Copiar</b>: dibuja mirando el modelo pequeño, sin guía encima. Los laboratorios no son para dibujar sino para jugar: mover el sol o el punto de fuga y ver qué pasa.</p>
+  </aside>
+</section>
+
+<!-- ================= STUDIO (lessons + free drawing) ================= -->
+<section id="v-studio" hidden>
+  <div class="topbar">
+    <button class="btn small" type="button" data-home>← Inicio</button>
+    <h2 id="st-title">Lección</h2>
+    <div class="dots" id="st-dots"></div>
+  </div>
+  <div class="studio">
+    <div class="paper-col">
+      <div class="paper" id="paper">
+        <canvas id="cv-guide"></canvas>
+        <canvas id="cv-draw"></canvas>
+        <canvas id="cv-stroke"></canvas>
+        <canvas id="cv-input" class="top"></canvas>
+      </div>
+      <div class="toolbar" id="toolbar">
+        <div class="group" role="group" aria-label="Herramientas">
+          <button class="tool" type="button" data-tool="lapiz" aria-pressed="true" title="Lápiz">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/></svg>Lápiz</button>
+          <button class="tool" type="button" data-tool="sombra" aria-pressed="false" title="Sombra suave">
+            <svg viewBox="0 0 24 24" fill="currentColor" opacity=".75"><circle cx="9" cy="14" r="6" opacity=".35"/><circle cx="14" cy="11" r="6" opacity=".55"/></svg>Sombra</button>
+          <button class="tool" type="button" data-tool="borrador" aria-pressed="false" title="Borrador">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 16l9-9 7 7-5 5H8z"/><path d="M8 20h12"/></svg>Borrar</button>
+        </div>
+        <div class="group" id="swatches" role="group" aria-label="Colores"></div>
+        <div class="group" role="group" aria-label="Grosor">
+          <button class="size" type="button" data-size="0" aria-label="Fino"><span style="width:6px;height:6px"></span></button>
+          <button class="size" type="button" data-size="1" aria-label="Medio" aria-pressed="true"><span style="width:12px;height:12px"></span></button>
+          <button class="size" type="button" data-size="2" aria-label="Grueso"><span style="width:20px;height:20px"></span></button>
+        </div>
+        <div class="group">
+          <button class="btn small" type="button" id="undo">↶ Deshacer</button>
+          <button class="btn small" type="button" id="clear">Hoja nueva</button>
+        </div>
+      </div>
+    </div>
+
+    <aside class="guide-card" id="guide-card">
+      <div id="lesson-panel">
+        <div style="display:grid;gap:12px">
+          <div class="step-label" id="st-step">Paso 1 de 7</div>
+          <p class="say" id="st-say"></p>
+          <p class="tip" id="st-tip"></p>
+          <span class="chip" id="st-chip" hidden></span>
+          <div class="seg" role="group" aria-label="Modo">
+            <button type="button" data-mode="calcar" aria-pressed="true">Calcar</button>
+            <button type="button" data-mode="copiar" aria-pressed="false">Copiar</button>
+          </div>
+          <div class="model">
+            <span class="step-label">Así va quedando</span>
+            <canvas id="cv-model" width="500" height="350"></canvas>
+          </div>
+          <div class="row">
+            <button class="btn small" type="button" id="speak">Escuchar</button>
+            <label class="check"><input type="checkbox" id="autovoz"><span>Leer cada paso</span></label>
+          </div>
+          <div class="nav">
+            <button class="btn" type="button" id="prev" aria-label="Paso anterior">←</button>
+            <button class="btn primary" type="button" id="next">¡Listo! →</button>
+          </div>
+        </div>
+      </div>
+      <div id="free-panel" hidden>
+        <div style="display:grid;gap:12px">
+          <div class="step-label">Dibujo libre</div>
+          <p class="say">Dibuja lo que quieras.</p>
+          <p class="tip">Prueba la <b>Sombra</b>: pasa una vez para un gris suave y varias veces para que quede más oscuro. Así pintan la sombra los artistas.</p>
+          <button class="btn primary" type="button" id="save-free">Guardar en mi galería</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= LIGHT LAB ================= -->
+<section id="v-lablight" hidden>
+  <div class="topbar">
+    <button class="btn small" type="button" data-home>← Inicio</button>
+    <h2>Laboratorio de luz</h2>
+  </div>
+  <div class="lab">
+    <div class="paper"><canvas id="cv-light"></canvas></div>
+    <aside class="guide-card">
+      <span class="step-label">Arrastra el sol con el dedo</span>
+      <p class="lab-msg" id="light-msg"></p>
+      <ul class="legend">
+        <li><b style="background:#fff6d6"></b><span><strong>Brillo:</strong> el puntito que mira directo al sol.</span></li>
+        <li><b style="background:#8f1f2a"></b><span><strong>Sombra propia:</strong> el lado que le da la espalda al sol.</span></li>
+        <li><b style="background:#4a5068"></b><span><strong>Sombra en el piso:</strong> la cosa tapa la luz y deja una mancha oscura, siempre del lado contrario al sol.</span></li>
+      </ul>
+      <label class="check"><input type="checkbox" id="light-labels" checked><span>Ver nombres</span></label>
+      <button class="btn primary" type="button" data-open="pelota">Ahora dibuja tú una pelota →</button>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= PERSPECTIVE LAB ================= -->
+<section id="v-labpersp" hidden>
+  <div class="topbar">
+    <button class="btn small" type="button" data-home>← Inicio</button>
+    <h2>Laboratorio de perspectiva</h2>
+  </div>
+  <div class="lab">
+    <div class="paper"><canvas id="cv-persp"></canvas></div>
+    <aside class="guide-card">
+      <span class="step-label">Arrastra el punto rojo</span>
+      <p class="lab-msg" id="persp-msg"></p>
+      <p class="tip">La línea del horizonte es la altura de tus ojos. Todas las líneas que se van hacia el fondo se juntan en el punto de fuga.</p>
+      <label class="check"><input type="checkbox" id="persp-lines" checked><span>Ver líneas de fuga</span></label>
+      <button class="btn primary" type="button" data-open="caja">Ahora dibuja tú una caja →</button>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= GALLERY ================= -->
+<section id="v-gallery" hidden>
+  <div class="topbar">
+    <button class="btn small" type="button" data-home>← Inicio</button>
+    <h2>Mi galería</h2>
+  </div>
+  <div id="gallery"></div>
+</section>
+</div>
+
+<div class="overlay" id="celebrate" hidden>
+  <div class="dialog">
+    <div class="stars">★★★</div>
+    <h2>¡Muy bien!</h2>
+    <p id="cel-text">Terminaste la lección.</p>
+    <div class="row">
+      <button class="btn primary" type="button" id="cel-save">Guardar en mi galería</button>
+    </div>
+    <div class="row">
+      <button class="btn small" type="button" id="cel-again">Hacerlo otra vez</button>
+      <button class="btn small" type="button" id="cel-home">Ir al inicio</button>
+    </div>
+  </div>
+</div>
+<div class="overlay viewer" id="viewer" hidden><img id="viewer-img" alt="Dibujo guardado"></div>
+<canvas id="confetti" hidden></canvas>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+"use strict";
+/* ============================================================
+   Geometry: every lesson is drawn in a 1000 x 700 space.
+   ============================================================ */
+const W = 1000, H = 700, RES = 1.4, CW = W * RES, CH = H * RES;
+const reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const circ = (cx, cy, r) => `M${cx + r},${cy} A${r},${r} 0 1 1 ${cx - r},${cy} A${r},${r} 0 1 1 ${cx + r},${cy} Z`;
+const ell = (cx, cy, rx, ry) => `M${cx + rx},${cy} A${rx},${ry} 0 1 1 ${cx - rx},${cy} A${rx},${ry} 0 1 1 ${cx + rx},${cy} Z`;
+const poly = (pts, close) => "M" + pts.map(p => p[0] + "," + p[1]).join(" L") + (close ? " Z" : "");
+const line = (a, b, c, d) => `M${a},${b} L${c},${d}`;
+const rect = (x1, y1, x2, y2) => poly([[x1, y1], [x2, y1], [x2, y2], [x1, y2]], true);
+const tree = (x, base, h) => [
+  poly([[x - h * .05, base], [x - h * .05, base - h * .45], [x + h * .05, base - h * .45], [x + h * .05, base]], false),
+  circ(x, base - h * .68, h * .3)
+];
+const lerpPt = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+
+/* ============================================================
+   Lessons
+   ============================================================ */
+const VP_ROAD = [500, 260];
+const roadDashes = [[690, 615], [565, 515], [480, 450], [422, 405], [385, 375], [362, 356]].map(([a, b]) => line(500, a, 500, b));
+const T = [0, .45, .75].map(t => {
+  const base = lerpPt([150, 600], VP_ROAD, t), top = lerpPt([150, 330], VP_ROAD, t);
+  return tree(base[0], base[1], base[1] - top[1]);
+}).flat();
+
+// box in 1-point perspective
+const VP_BOX = [560, 190];
+const A = [250, 380], B = [450, 380], C = [450, 560], D = [250, 560];
+const tb = .35, A2 = lerpPt(A, VP_BOX, tb), B2 = lerpPt(B, VP_BOX, tb), C2 = lerpPt(C, VP_BOX, tb);
+
+const LESSONS = [
+  { id: "gato", unit: "partes", title: "Un gato", steps: [
+    { say: "Empezamos por la cabeza: un círculo grande.", tip: "Las figuras grandes siempre van primero.", paths: [circ(500, 250, 110)] },
+    { say: "Dos triángulos arriba: ¡las orejas!", paths: [poly([[418, 190], [432, 95], [482, 150]]), poly([[582, 190], [568, 95], [518, 150]])] },
+    { say: "Ahora el cuerpo: un óvalo grande debajo de la cabeza.", tip: "Un óvalo es un círculo aplastado.", paths: [ell(500, 470, 135, 115)] },
+    { say: "Los ojos, la nariz y la boquita.", paths: [circ(460, 240, 16), circ(540, 240, 16), poly([[488, 272], [512, 272], [500, 286]], true), "M500,286 Q488,304 472,296 M500,286 Q512,304 528,296"] },
+    { say: "Los bigotes: tres rayitas de cada lado.", paths: [line(450, 282, 360, 262), line(450, 288, 358, 288), line(450, 294, 362, 314), line(550, 282, 640, 262), line(550, 288, 642, 288), line(550, 294, 638, 314)] },
+    { say: "La cola, curvita como una ola.", paths: ["M630,500 Q730,490 715,400 Q705,350 745,330"] },
+    { say: "Las patitas: dos óvalos pequeños abajo.", paths: [ell(450, 578, 40, 20), ell(550, 578, 40, 20)] },
+    { say: "¡Colorea tu gato como más te guste!", tip: "Puedes cambiar a Copiar y hacer otro gato sin la guía." }
+  ]},
+  { id: "casa", unit: "partes", title: "Una casa", steps: [
+    { say: "Un cuadrado grande: las paredes.", paths: [rect(330, 330, 670, 620)] },
+    { say: "Un triángulo encima: el techo.", paths: [poly([[300, 330], [500, 150], [700, 330]], true)] },
+    { say: "Un rectángulo alto: la puerta. Y una bolita para abrirla.", paths: [poly([[460, 620], [460, 480], [540, 480], [540, 620]]), circ(528, 555, 6)] },
+    { say: "Dos ventanas cuadradas con una cruz en el medio.", paths: [rect(360, 400, 440, 470), line(400, 400, 400, 470), line(360, 435, 440, 435), rect(560, 400, 640, 470), line(600, 400, 600, 470), line(560, 435, 640, 435)] },
+    { say: "La chimenea en el techo.", paths: [poly([[590, 231], [590, 170], [635, 170], [635, 271]])] },
+    { say: "El suelo y un sol en el cielo.", paths: [line(150, 620, 850, 620), circ(170, 140, 45)] },
+    { say: "¡Colorea tu casa!", tip: "Pinta primero lo grande (paredes y techo) y después lo chiquito." }
+  ]},
+  { id: "pez", unit: "partes", title: "Un pez", steps: [
+    { say: "El cuerpo es un óvalo acostado.", paths: [ell(470, 350, 200, 120)] },
+    { say: "La cola: un triángulo con una muesca.", paths: [poly([[662, 350], [800, 250], [775, 350], [800, 450]], true)] },
+    { say: "El ojo y la boca.", paths: [circ(360, 320, 22), circ(355, 320, 8), "M275,370 Q295,386 318,372"] },
+    { say: "Las aletas: una arriba y una abajo.", paths: ["M420,233 Q480,150 560,240", "M450,467 Q490,530 540,462"] },
+    { say: "Las escamas: medias lunas, una al lado de la otra.", paths: [[470, 300], [530, 300], [590, 300], [500, 370], [560, 370]].map(([x, y]) => `M${x},${y - 30} Q${x + 28},${y} ${x},${y + 30}`) },
+    { say: "¡Colorea tu pez con muchos colores!" }
+  ]},
+
+  { id: "pelota", unit: "luz", title: "Pelota con luz", sun: [170, 120], steps: [
+    { say: "Dibuja un círculo grande. Será una pelota.", tip: "¿Ves el sol arriba a la izquierda? De ahí viene la luz.", paths: [circ(520, 330, 150)] },
+    { say: "La luz viaja en línea recta desde el sol hasta la pelota.", tip: "Estas líneas amarillas son solo para mirar, no hay que dibujarlas.", look: true, paths: [line(210, 150, 420, 245), line(205, 168, 392, 320), line(222, 115, 470, 190)] },
+    { say: "Primero un gris muy suave en casi toda la pelota.", tip: "Pasa la Sombra una sola vez. Deja sin pintar el círculo blanco: ese es el brillo.", tool: "sombra",
+      regions: [{ clip: circ(520, 330, 150), cut: circ(462, 272, 46), tone: "mid", label: "gris suave", at: [610, 300] }, { clip: ell(462, 272, 34, 26), tone: "light", label: "brillo: no pintar", at: [330, 210] }] },
+    { say: "Ahora la sombra propia: el lado que no mira al sol.", tip: "Pasa la Sombra varias veces. Más oscuro abajo a la derecha, lejos del sol.", tool: "sombra",
+      regions: [{ clip: circ(520, 330, 150), cut: circ(478, 288, 150), tone: "dark", label: "sombra propia", at: [700, 430] }] },
+    { say: "La sombra en el piso. La pelota tapa la luz y deja una mancha oscura.", tip: "Va del lado contrario al sol, y es más oscura pegadita a la pelota.", tool: "sombra",
+      regions: [{ clip: ell(615, 478, 180, 30), cut: circ(520, 330, 150), tone: "dark", label: "sombra en el piso", at: [760, 545] }] },
+    { say: "¡Mira tu pelota! Ya no parece un círculo plano: parece redonda de verdad.", tip: "Si quieres, colorea encima con un color clarito." }
+  ]},
+  { id: "cubo", unit: "luz", title: "Cubo con luz", sun: [140, 110], steps: [
+    { say: "Un cuadrado: la cara de enfrente del cubo.", paths: [rect(380, 300, 580, 500)] },
+    { say: "Tres líneas inclinadas hacia atrás, todas iguales.", tip: "Todas van hacia el mismo lado y tienen el mismo largo.", paths: [line(380, 300, 480, 230), line(580, 300, 680, 230), line(580, 500, 680, 430)] },
+    { say: "Únelas para cerrar la tapa y el costado.", paths: [line(480, 230, 680, 230), line(680, 230, 680, 430)] },
+    { say: "La tapa mira al sol: queda muy clarita. Déjala casi blanca.", tool: "sombra",
+      regions: [{ clip: poly([[380, 300], [480, 230], [680, 230], [580, 300]], true), tone: "light", label: "con luz", at: [380, 200] }] },
+    { say: "La cara de enfrente recibe un poco de luz: gris suave.", tip: "Una pasada de Sombra.", tool: "sombra",
+      regions: [{ clip: rect(380, 300, 580, 500), tone: "mid", label: "gris suave", at: [300, 540] }] },
+    { say: "El costado le da la espalda al sol: ¡es la cara más oscura!", tip: "Pasa la Sombra muchas veces.", tool: "sombra",
+      regions: [{ clip: poly([[580, 300], [680, 230], [680, 430], [580, 500]], true), tone: "dark", label: "oscuro", at: [740, 300] }] },
+    { say: "La sombra en el piso, hacia el lado contrario al sol.", tool: "sombra",
+      regions: [{ clip: poly([[580, 500], [680, 430], [880, 430], [790, 500]], true), tone: "dark", label: "sombra en el piso", at: [820, 560] }] },
+    { say: "¡Tu cubo tiene tres tonos: claro, medio y oscuro! Así se ve en 3D.", tip: "Prueba lo mismo con una caja de tu casa junto a una ventana." }
+  ]},
+
+  { id: "camino", unit: "persp", title: "Un camino", steps: [
+    { say: "Una línea acostada de lado a lado: el horizonte.", tip: "Es donde el cielo toca la tierra.", paths: [line(40, 260, 960, 260)] },
+    { say: "Un punto en el horizonte: el punto de fuga.", tip: "Ahí todo se hace tan pequeñito que desaparece.", paths: [circ(500, 260, 7)], points: [{ at: VP_ROAD, label: "punto de fuga" }] },
+    { say: "Dos líneas desde el punto hasta abajo: los bordes del camino.", tip: "Cerca el camino es ancho, lejos es angostito.", paths: [line(500, 260, 180, 690), line(500, 260, 820, 690)] },
+    { say: "Rayitas en el medio del camino: grandes cerca, chiquitas lejos.", paths: roadDashes },
+    { say: "Tres árboles: el de cerca es grande, el de lejos es chiquito.", tip: "Fíjate en la línea amarilla: las copas van bajando hasta el punto de fuga.", paths: T },
+    { say: "Colorea: el cielo arriba del horizonte y el pasto abajo.", tip: "Las cosas lejanas se pintan más clarito, como si hubiera neblina." }
+  ]},
+  { id: "caja", unit: "persp", title: "Caja en perspectiva", sun: [120, 90], steps: [
+    { say: "Dibuja el horizonte: una línea acostada.", paths: [line(40, 190, 960, 190)] },
+    { say: "Pon el punto de fuga en el horizonte.", paths: [circ(560, 190, 7)], points: [{ at: VP_BOX, label: "punto de fuga" }] },
+    { say: "Un cuadrado abajo: la cara de enfrente de la caja.", paths: [rect(250, 380, 450, 560)] },
+    { say: "Desde tres esquinas, líneas suaves hasta el punto de fuga.", tip: "Dibújalas suavecito, después borramos lo que sobra.", paths: [line(A[0], A[1], 560, 190), line(B[0], B[1], 560, 190), line(C[0], C[1], 560, 190)] },
+    { say: "Corta las líneas: dibuja el fondo de la caja.", tip: "Una línea acostada y una parada, como un pedacito de cuadrado.", paths: [line(A2[0], A2[1], B2[0], B2[1]), line(B2[0], B2[1], C2[0], C2[1])] },
+    { say: "Borra lo que sobra de las líneas, desde el fondo hasta el punto de fuga.", tip: "Usa el Borrador. ¡Ya tienes una caja en 3D!", tool: "borrador",
+      regions: [{ clip: poly([[A2[0] - 8, A2[1]], [560, 182], [560, 198], [C2[0] + 8, C2[1]], [B2[0] + 8, B2[1] - 8]], true), tone: "light", label: "borrar aquí", at: [700, 260] }] },
+    { say: "Ahora la luz: la tapa clarita, enfrente gris suave, el costado oscuro.", tip: "El sol está arriba a la izquierda.", tool: "sombra",
+      regions: [{ clip: poly([A, B, B2, A2], true), tone: "light", label: "clarito", at: [200, 300] }, { clip: rect(250, 380, 450, 560), tone: "mid", label: "gris suave", at: [170, 610] },
+        { clip: poly([B, B2, C2, C], true), tone: "dark", label: "oscuro", at: [560, 470] }] },
+    { say: "¡Dibujaste una caja en perspectiva con luz y sombra!", tip: "Prueba otra caja arriba del horizonte: ahí se le ve la panza." }
+  ]}
+];
+const LAB_CARDS = { luz: { id: "lablight", title: "Laboratorio de luz" }, persp: { id: "labpersp", title: "Laboratorio de perspectiva" } };
+
+/* ============================================================
+   Storage (per-device conveniences)
+   ============================================================ */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+};
+let stars = store.get("taller.estrellas", {});
+
+/* ============================================================
+   Drawing helpers for guides
+   ============================================================ */
+const pcache = new Map();
+const P = d => { let p = pcache.get(d); if (!p) { p = new Path2D(d); pcache.set(d, p); } return p; };
+const scaleTo = ctx => { const s = ctx.canvas.width / W; ctx.setTransform(s, 0, 0, s, 0, 0); return s; };
+const INK = "#2b2740", DONE = "#bdb7cf", GUIDE = "#2f5bd8", LOOK = "#e8a400";
+const TONE = {
+  light: { line: "#e8a400", fill: "rgba(0,0,0,0)" },
+  mid: { line: "#8a83a0", fill: "rgba(110,104,135,0.33)" },
+  dark: { line: "#3d3650", fill: "rgba(52,46,70,0.62)" }
+};
+
+function hatch(ctx, tone) {
+  const c = document.createElement("canvas"); c.width = c.height = 22;
+  const g = c.getContext("2d");
+  g.strokeStyle = TONE[tone].line; g.fillStyle = TONE[tone].line;
+  if (tone === "light") { g.globalAlpha = .9; g.beginPath(); g.arc(5, 5, 2.2, 0, 7); g.arc(16, 16, 2.2, 0, 7); g.fill(); }
+  else {
+    g.lineWidth = tone === "dark" ? 3 : 2; g.globalAlpha = tone === "dark" ? .75 : .6;
+    g.beginPath(); g.moveTo(-2, 24); g.lineTo(24, -2); g.moveTo(-2, 13); g.lineTo(13, -2); g.moveTo(9, 24); g.lineTo(24, 9); g.stroke();
+    if (tone === "dark") { g.beginPath(); g.moveTo(-2, -2); g.lineTo(24, 24); g.stroke(); }
+  }
+  return ctx.createPattern(c, "repeat");
+}
+
+function drawSun(ctx, x, y, r = 36) {
+  ctx.save(); ctx.strokeStyle = "#e8a400"; ctx.lineWidth = 5; ctx.lineCap = "round";
+  for (let i = 0; i < 10; i++) {
+    const a = i / 10 * Math.PI * 2;
+    ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * (r + 8), y + Math.sin(a) * (r + 8));
+    ctx.lineTo(x + Math.cos(a) * (r + 22), y + Math.sin(a) * (r + 22)); ctx.stroke();
+  }
+  ctx.fillStyle = "#f7c948"; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = 3; ctx.stroke();
+  ctx.restore();
+}
+
+function bubble(ctx, text, x, y, border) {
+  ctx.save(); ctx.font = "800 22px Nunito, system-ui, sans-serif"; ctx.textBaseline = "middle"; ctx.textAlign = "center";
+  const w = ctx.measureText(text).width + 24, h = 36;
+  x = Math.max(w / 2 + 6, Math.min(W - w / 2 - 6, x)); y = Math.max(h / 2 + 4, Math.min(H - h / 2 - 4, y));
+  ctx.fillStyle = "rgba(255,255,255,.94)"; ctx.strokeStyle = border; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x - w / 2, y - h / 2, w, h, 18); else ctx.rect(x - w / 2, y - h / 2, w, h);
+  ctx.fill(); ctx.stroke(); ctx.fillStyle = INK; ctx.fillText(text, x, y + 1); ctx.restore();
+}
+
+function drawRegion(ctx, r, kind) {
+  const c = document.createElement("canvas"); c.width = ctx.canvas.width; c.height = ctx.canvas.height;
+  const o = c.getContext("2d"); scaleTo(o);
+  o.fillStyle = kind === "model" ? TONE[r.tone].fill : hatch(o, r.tone);
+  o.fill(P(r.clip));
+  if (r.cut) { o.globalCompositeOperation = "destination-out"; o.fillStyle = "#000"; o.fill(P(r.cut)); }
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(c, 0, 0); ctx.restore();
+  if (kind !== "model" && r.label) bubble(ctx, r.label, r.at[0], r.at[1], TONE[r.tone].line);
+}
+
+function drawPoint(ctx, pt, withLabel) {
+  ctx.save(); ctx.fillStyle = "#e5484d"; ctx.beginPath(); ctx.arc(pt.at[0], pt.at[1], 10, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+  if (withLabel) bubble(ctx, pt.label, pt.at[0], pt.at[1] - 38, "#e5484d");
+}
+
+function strokePaths(ctx, paths, color, width, dash, offset) {
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineCap = "round"; ctx.lineJoin = "round";
+  if (dash) { ctx.setLineDash(dash); ctx.lineDashOffset = offset || 0; }
+  for (const d of paths) ctx.stroke(P(d));
+  ctx.restore();
+}
+
+/* kind: "trace" = paper guide, "model" = finished-so-far preview, "copy" = paper with only references */
+function drawGuide(ctx, lesson, si, kind) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  if (kind === "model") { ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height); }
+  scaleTo(ctx);
+  if (lesson.sun) drawSun(ctx, lesson.sun[0], lesson.sun[1]);
+  if (kind === "copy") return;
+  const upto = kind === "model" ? si : si - 1;
+  if (kind === "model") {
+    for (let i = 0; i <= upto; i++) for (const r of lesson.steps[i].regions || []) drawRegion(ctx, r, "model");
+  }
+  for (let i = 0; i <= upto; i++) {
+    const s = lesson.steps[i];
+    if (s.paths && !s.look) strokePaths(ctx, s.paths, kind === "model" ? (i === si ? GUIDE : INK) : DONE, kind === "model" ? 5 : 3);
+    for (const pt of s.points || []) drawPoint(ctx, pt, false);
+  }
+  if (kind === "model" && lesson.steps[si].look) strokePaths(ctx, lesson.steps[si].paths, LOOK, 4, [10, 10], 0);
+  if (kind === "trace") {
+    const s = lesson.steps[si];
+    for (const r of s.regions || []) drawRegion(ctx, r, "trace");
+    for (const pt of s.points || []) drawPoint(ctx, pt, true);
+  }
+}
+function drawThumb(canvas, lesson) {
+  const ctx = canvas.getContext("2d");
+  drawGuide(ctx, lesson, lesson.steps.length - 1, "model");
+  // repaint all strokes in ink so the thumbnail looks finished
+  scaleTo(ctx);
+  lesson.steps.forEach(s => { if (s.paths && !s.look) strokePaths(ctx, s.paths, INK, 5); });
+}
+
+/* ============================================================
+   Drawing pad
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const cvGuide = $("cv-guide"), cvDraw = $("cv-draw"), cvStroke = $("cv-stroke"), cvInput = $("cv-input");
+[cvGuide, cvDraw, cvStroke, cvInput].forEach(c => { c.width = CW; c.height = CH; });
+const gctx = cvGuide.getContext("2d"), dctx = cvDraw.getContext("2d"), sctx = cvStroke.getContext("2d");
+const guideCache = document.createElement("canvas"); guideCache.width = CW; guideCache.height = CH;
+const cctx = guideCache.getContext("2d");
+
+const COLORS = ["#2b2730", "#7d7787", "#8a5a3b", "#e5484d", "#f5832a", "#f7c948", "#3fae6a", "#9bd46b", "#4fb3e8", "#3563d6", "#8b5cf6", "#f27bb4", "#f3c9a3"];
+const COLOR_NAMES = ["Negro", "Gris", "Café", "Rojo", "Naranja", "Amarillo", "Verde", "Verde claro", "Celeste", "Azul", "Morado", "Rosado", "Piel"];
+const SIZES = [5, 12, 26];
+const pad = { tool: "lapiz", color: COLORS[0], size: 1, undo: [], drawing: false, last: null, mid: null, pid: null, dirty: false };
+
+const sw = $("swatches");
+COLORS.forEach((c, i) => {
+  const b = document.createElement("button"); b.type = "button"; b.className = "swatch"; b.style.background = c;
+  b.dataset.color = c; b.setAttribute("aria-label", COLOR_NAMES[i]); b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+  sw.appendChild(b);
+});
+function setTool(t) { pad.tool = t; document.querySelectorAll("[data-tool]").forEach(b => b.setAttribute("aria-pressed", b.dataset.tool === t)); }
+function setColor(c) { pad.color = c; document.querySelectorAll("[data-color]").forEach(b => b.setAttribute("aria-pressed", b.dataset.color === c)); if (pad.tool === "borrador") setTool("lapiz"); }
+function setSize(i) { pad.size = i; document.querySelectorAll("[data-size]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.size === i)); }
+document.querySelectorAll("[data-tool]").forEach(b => b.addEventListener("click", () => setTool(b.dataset.tool)));
+sw.addEventListener("click", e => { const b = e.target.closest("[data-color]"); if (b) setColor(b.dataset.color); });
+document.querySelectorAll("[data-size]").forEach(b => b.addEventListener("click", () => setSize(+b.dataset.size)));
+
+function toolStyle(pressure) {
+  const base = SIZES[pad.size] * (pressure ? 0.55 + pressure * 0.9 : 1);
+  if (pad.tool === "sombra") return { w: base * 2.4, alpha: .2, blur: base * 1.2 };
+  if (pad.tool === "borrador") return { w: base * 2.2, alpha: 1, blur: 0 };
+  return { w: base, alpha: 1, blur: 0 };
+}
+function pos(e) {
+  const r = cvInput.getBoundingClientRect();
+  return { x: (e.clientX - r.left) / r.width * CW, y: (e.clientY - r.top) / r.height * CH, p: e.pointerType === "pen" ? e.pressure : 0 };
+}
+function segCtx() { return pad.tool === "borrador" ? dctx : sctx; }
+function prepCtx(ctx, st) {
+  ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = st.w;
+  if (pad.tool === "borrador") { ctx.globalCompositeOperation = "destination-out"; ctx.strokeStyle = ctx.fillStyle = "#000"; ctx.shadowBlur = 0; }
+  else { ctx.globalCompositeOperation = "source-over"; ctx.strokeStyle = ctx.fillStyle = pad.color; ctx.shadowBlur = st.blur; ctx.shadowColor = pad.color; }
+}
+function pushUndo() {
+  try {
+    const c = document.createElement("canvas"); c.width = CW; c.height = CH; c.getContext("2d").drawImage(cvDraw, 0, 0);
+    pad.undo.push(c); if (pad.undo.length > 12) pad.undo.shift();
+  } catch (e) { /* low memory: skip */ }
+}
+cvInput.addEventListener("pointerdown", e => {
+  if (pad.drawing) return;
+  e.preventDefault();
+  try { cvInput.setPointerCapture(e.pointerId); } catch (err) {}
+  pushUndo();
+  pad.drawing = true; pad.pid = e.pointerId; pad.dirty = true;
+  const p = pos(e), st = toolStyle(p.p);
+  cvStroke.style.opacity = st.alpha;
+  const ctx = segCtx(); prepCtx(ctx, st);
+  ctx.beginPath(); ctx.arc(p.x, p.y, st.w / 2, 0, Math.PI * 2); ctx.fill();
+  pad.last = p; pad.mid = p;
+});
+cvInput.addEventListener("pointermove", e => {
+  if (!pad.drawing || e.pointerId !== pad.pid) return;
+  const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+  const ctx = segCtx();
+  for (const ev of (evs.length ? evs : [e])) {
+    const p = pos(ev), st = toolStyle(p.p); prepCtx(ctx, st);
+    const m = { x: (pad.last.x + p.x) / 2, y: (pad.last.y + p.y) / 2 };
+    ctx.beginPath(); ctx.moveTo(pad.mid.x, pad.mid.y); ctx.quadraticCurveTo(pad.last.x, pad.last.y, m.x, m.y); ctx.stroke();
+    pad.last = p; pad.mid = m;
+  }
+});
+function endStroke(e) {
+  if (!pad.drawing || (e && e.pointerId !== pad.pid)) return;
+  pad.drawing = false;
+  if (pad.tool !== "borrador") {
+    dctx.save(); dctx.globalCompositeOperation = "source-over"; dctx.shadowBlur = 0;
+    dctx.globalAlpha = parseFloat(cvStroke.style.opacity || "1"); dctx.drawImage(cvStroke, 0, 0); dctx.restore();
+    sctx.clearRect(0, 0, CW, CH);
+  }
+  dctx.globalCompositeOperation = "source-over";
+}
+cvInput.addEventListener("pointerup", endStroke);
+cvInput.addEventListener("pointercancel", endStroke);
+cvInput.addEventListener("lostpointercapture", endStroke);
+
+$("undo").addEventListener("click", () => {
+  const c = pad.undo.pop(); if (!c) { toast("No hay nada que deshacer"); return; }
+  dctx.save(); dctx.globalCompositeOperation = "source-over"; dctx.clearRect(0, 0, CW, CH); dctx.drawImage(c, 0, 0); dctx.restore();
+});
+function clearPaper() { dctx.clearRect(0, 0, CW, CH); sctx.clearRect(0, 0, CW, CH); pad.undo = []; pad.dirty = false; }
+twoTap($("clear"), "¿Seguro? Toca otra vez", () => { pushUndo(); dctx.clearRect(0, 0, CW, CH); });
+
+function twoTap(btn, armedLabel, action) {
+  const label = btn.textContent; let timer = 0;
+  btn.addEventListener("click", () => {
+    if (btn.dataset.armed) { clearTimeout(timer); delete btn.dataset.armed; btn.textContent = label; action(); return; }
+    btn.dataset.armed = "1"; btn.textContent = armedLabel;
+    timer = setTimeout(() => { delete btn.dataset.armed; btn.textContent = label; }, 3000);
+  });
+}
+
+/* ============================================================
+   Views
+   ============================================================ */
+let view = "home";
+function show(name) {
+  ["home", "studio", "lablight", "labpersp", "gallery"].forEach(v => $("v-" + v).hidden = v !== name);
+  view = name; window.scrollTo(0, 0);
+  try { speechSynthesis.cancel(); } catch (e) {}
+  if (name === "home") renderHome();
+  if (name === "gallery") renderGallery();
+  if (name === "lablight") drawLight();
+  if (name === "labpersp") drawPersp();
+}
+document.querySelectorAll("[data-home]").forEach(b => b.addEventListener("click", () => show("home")));
+document.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => openLesson(b.dataset.open)));
+$("go-free").addEventListener("click", openFree);
+$("go-gallery").addEventListener("click", () => show("gallery"));
+
+function renderHome() {
+  ["partes", "luz", "persp"].forEach(unit => {
+    const box = $("cards-" + unit); box.innerHTML = "";
+    if (LAB_CARDS[unit]) box.appendChild(labCard(LAB_CARDS[unit]));
+    LESSONS.filter(l => l.unit === unit).forEach(l => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "card";
+      b.innerHTML = `<canvas width="500" height="350"></canvas><div class="ct"><div><h3>${l.title}</h3><div class="meta">${l.steps.length} pasos</div></div><span class="star ${stars[l.id] ? "on" : ""}" aria-label="${stars[l.id] ? "Terminada" : "Sin terminar"}">★</span></div>`;
+      drawThumb(b.querySelector("canvas"), l);
+      b.addEventListener("click", () => openLesson(l.id));
+      box.appendChild(b);
+    });
+  });
+}
+function labCard(lab) {
+  const b = document.createElement("button"); b.type = "button"; b.className = "card";
+  b.innerHTML = `<span class="tag">Para jugar</span><canvas width="500" height="350"></canvas><div class="ct"><div><h3>${lab.title}</h3><div class="meta">Mueve y mira qué pasa</div></div></div>`;
+  const cv = b.querySelector("canvas");
+  if (lab.id === "lablight") renderLight(cv.getContext("2d"), { x: 200, y: 110 }, false); else renderPersp(cv.getContext("2d"), { x: 560, y: 300 }, true);
+  b.addEventListener("click", () => show(lab.id));
+  return b;
+}
+
+/* ---------- Studio ---------- */
+let lesson = null, si = 0, mode = "calcar", raf = 0;
+const say = $("st-say"), tip = $("st-tip"), chip = $("st-chip"), mctx = $("cv-model").getContext("2d");
+
+function openLesson(id) {
+  lesson = LESSONS.find(l => l.id === id); si = 0;
+  clearPaper(); setTool("lapiz"); setColor(COLORS[0]); setSize(1);
+  $("lesson-panel").hidden = false; $("free-panel").hidden = true;
+  $("st-title").textContent = lesson.title;
+  show("studio"); renderStep();
+}
+function openFree() {
+  lesson = null; clearPaper(); stopAnim();
+  gctx.setTransform(1, 0, 0, 1, 0, 0); gctx.clearRect(0, 0, CW, CH);
+  $("lesson-panel").hidden = true; $("free-panel").hidden = false;
+  $("st-title").textContent = "Dibujo libre"; $("st-dots").innerHTML = "";
+  $("guide-card").classList.remove("copy");
+  show("studio");
+}
+function renderStep() {
+  const s = lesson.steps[si], n = lesson.steps.length;
+  $("st-step").textContent = `Paso ${si + 1} de ${n}`;
+  say.textContent = s.say; tip.textContent = s.tip || ""; tip.hidden = !s.tip;
+  $("st-dots").innerHTML = lesson.steps.map((_, i) => `<i class="${i < si ? "done" : i === si ? "now" : ""}"></i>`).join("");
+  $("prev").disabled = si === 0;
+  $("next").textContent = si === n - 1 ? "¡Terminé! ★" : "¡Listo! →";
+  const toolNames = { sombra: "Usa: Sombra", borrador: "Usa: Borrador" };
+  if (s.tool === "sombra" && pad.color === COLORS[0]) setColor(COLORS[1]); // black is too strong for shading
+  if (s.tool) setTool(s.tool);
+  else if (s.paths && !s.look) setTool("lapiz");
+  chip.hidden = !s.tool; if (s.tool) chip.textContent = toolNames[s.tool];
+  drawGuide(mctx, lesson, si, "model");
+  drawGuide(cctx, lesson, si, mode === "calcar" ? "trace" : "copy");
+  $("guide-card").classList.toggle("copy", mode === "copiar");
+  startAnim();
+  if ($("autovoz").checked) speak();
+}
+function startAnim() {
+  stopAnim();
+  const frame = t => {
+    gctx.setTransform(1, 0, 0, 1, 0, 0); gctx.clearRect(0, 0, CW, CH); gctx.drawImage(guideCache, 0, 0);
+    if (lesson && mode === "calcar") {
+      const s = lesson.steps[si];
+      if (s.paths) { scaleTo(gctx); strokePaths(gctx, s.paths, s.look ? LOOK : GUIDE, s.look ? 4 : 5, [14, 12], reduceMotion ? 0 : -t / 45); }
+    }
+    if (!reduceMotion && view === "studio" && lesson) raf = requestAnimationFrame(frame);
+  };
+  frame(0);
+}
+function stopAnim() { if (raf) cancelAnimationFrame(raf); raf = 0; }
+$("prev").addEventListener("click", () => { if (si > 0) { si--; renderStep(); } });
+$("next").addEventListener("click", () => {
+  if (si < lesson.steps.length - 1) { si++; renderStep(); return; }
+  stars[lesson.id] = true; store.set("taller.estrellas", stars);
+  $("cel-text").textContent = `Terminaste: ${lesson.title}.`;
+  $("cel-save").disabled = false; $("cel-save").textContent = "Guardar en mi galería";
+  $("celebrate").hidden = false; confetti();
+});
+document.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => {
+  mode = b.dataset.mode; document.querySelectorAll("[data-mode]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  if (lesson) renderStep();
+}));
+$("cel-save").addEventListener("click", () => { if (saveDrawing(lesson ? lesson.title : "Dibujo libre")) { $("cel-save").disabled = true; $("cel-save").textContent = "Guardado ✓"; } });
+$("cel-again").addEventListener("click", () => { $("celebrate").hidden = true; openLesson(lesson.id); });
+$("cel-home").addEventListener("click", () => { $("celebrate").hidden = true; show("home"); });
+$("save-free").addEventListener("click", () => saveDrawing("Dibujo libre"));
+
+/* ---------- Voice ---------- */
+function speak() {
+  if (!lesson || !("speechSynthesis" in window)) return;
+  const s = lesson.steps[si];
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(s.say + (s.tip ? " " + s.tip : ""));
+    u.lang = "es-ES"; u.rate = .95; u.pitch = 1.1;
+    const v = speechSynthesis.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith("es"));
+    if (v) u.voice = v;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+$("speak").addEventListener("click", speak);
+if (!("speechSynthesis" in window)) { $("speak").hidden = true; $("autovoz").parentElement.hidden = true; }
+$("autovoz").checked = store.get("taller.voz", false);
+$("autovoz").addEventListener("change", e => { store.set("taller.voz", e.target.checked); if (e.target.checked) speak(); });
+
+/* ---------- Gallery ---------- */
+function saveDrawing(title) {
+  const c = document.createElement("canvas"); c.width = 700; c.height = 490;
+  const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, 700, 490); x.drawImage(cvDraw, 0, 0, 700, 490);
+  let data; try { data = c.toDataURL("image/jpeg", .82); } catch (e) { toast("No se pudo guardar"); return false; }
+  const list = store.get("taller.galeria", []);
+  list.unshift({ data, title, at: Date.now() });
+  while (list.length > 40) list.pop();
+  while (!store.set("taller.galeria", list) && list.length > 1) list.pop();
+  if (!store.get("taller.galeria", []).length) { toast("Este navegador no deja guardar dibujos"); return false; }
+  toast("¡Guardado en tu galería!"); return true;
+}
+function renderGallery() {
+  const box = $("gallery"), list = store.get("taller.galeria", []);
+  if (!list.length) { box.innerHTML = `<div class="empty"><strong>Tu galería está vacía</strong>Termina una lección o guarda un dibujo libre y aparecerá aquí.</div>`; return; }
+  box.className = "gallery"; box.innerHTML = "";
+  list.forEach((it, i) => {
+    const d = document.createElement("div"); d.className = "gitem";
+    const date = new Date(it.at).toLocaleDateString("es", { day: "numeric", month: "short" });
+    d.innerHTML = `<img alt="${it.title}" src="${it.data}"><div class="row"><div><strong>${it.title}</strong><br><small>${date}</small></div><button class="btn small" type="button">Borrar</button></div>`;
+    d.querySelector("img").addEventListener("click", () => { $("viewer-img").src = it.data; $("viewer").hidden = false; });
+    twoTap(d.querySelector("button"), "¿Seguro?", () => { const l = store.get("taller.galeria", []); l.splice(i, 1); store.set("taller.galeria", l); renderGallery(); });
+    box.appendChild(d);
+  });
+}
+$("viewer").addEventListener("click", () => $("viewer").hidden = true);
+
+/* ============================================================
+   Light lab: a point light. Shadows are projected from the sun.
+   ============================================================ */
+const G = 510, HORIZON = 300;
+const lightCv = $("cv-light"); lightCv.width = CW; lightCv.height = CH;
+let sunPos = { x: 210, y: 110 };
+const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+const rgb = a => `rgb(${a[0]},${a[1]},${a[2]})`;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+function hull(pts) {
+  pts = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cross = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo = [], up = [];
+  for (const p of pts) { while (lo.length >= 2 && cross(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+  for (const p of pts.reverse()) { while (up.length >= 2 && cross(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
+  return lo.slice(0, -1).concat(up.slice(0, -1));
+}
+
+function renderLight(ctx, sun, labels) {
+  scaleTo(ctx);
+  const elev = clamp((HORIZON - sun.y) / 250, 0, 1);
+  const sky = ctx.createLinearGradient(0, 0, 0, HORIZON);
+  sky.addColorStop(0, rgb(mix([246, 140, 92], [104, 182, 240], elev))); sky.addColorStop(1, rgb(mix([255, 210, 150], [200, 232, 252], elev)));
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, W, HORIZON);
+  ctx.fillStyle = rgb(mix([120, 160, 92], [150, 210, 120], elev)); ctx.fillRect(0, HORIZON, W, H - HORIZON);
+
+  const shift = (h, x) => clamp(h * (x - sun.x) / Math.max(G - sun.y, 40), -520, 520);
+  const shadowFill = `rgba(30,40,60,${0.25 + 0.25 * elev})`;
+
+  // sphere
+  const cx = 330, cy = 410, r = 100;
+  const sh = shift(2 * r, cx);
+  ctx.save(); ctx.fillStyle = shadowFill; ctx.shadowColor = shadowFill; ctx.shadowBlur = 18;
+  ctx.beginPath(); ctx.ellipse(cx + sh / 2, G, Math.abs(sh) / 2 + r * .7, r * .2, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+
+  // cube shadow (front face 620..760 x 390..510, depth +55,-40)
+  const fx1 = 620, fx2 = 760, top = 390, dx = 55, dy = -40, ch = G - top;
+  const cs = shift(ch, (fx1 + fx2) / 2 + dx / 2);
+  const foot = [[fx1, G], [fx2, G], [fx2 + dx, G + dy], [fx1 + dx, G + dy]];
+  const shp = hull(foot.concat(foot.map(p => [p[0] + cs, p[1]])));
+  ctx.save(); ctx.fillStyle = shadowFill; ctx.shadowColor = shadowFill; ctx.shadowBlur = 14;
+  ctx.beginPath(); shp.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); ctx.fill(); ctx.restore();
+
+  // sphere body
+  let vx = sun.x - cx, vy = sun.y - cy; const len = Math.hypot(vx, vy) || 1; vx /= len; vy /= len;
+  const hx = cx + vx * r * .5, hy = cy + vy * r * .5;
+  const gr = ctx.createRadialGradient(hx, hy, r * .04, cx + vx * r * .2, cy + vy * r * .2, r * 1.3);
+  gr.addColorStop(0, "#fff6d6"); gr.addColorStop(.1, "#ff9ea0"); gr.addColorStop(.45, "#e5484d"); gr.addColorStop(.78, "#8f1f2a"); gr.addColorStop(1, "#5a1219");
+  ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+  // contact shadow
+  ctx.fillStyle = "rgba(20,20,40,.35)"; ctx.beginPath(); ctx.ellipse(cx, G - 2, r * .45, 7, 0, 0, Math.PI * 2); ctx.fill();
+
+  // cube faces: brightness from light direction
+  const ccx = (fx1 + fx2) / 2, ccy = (top + G) / 2;
+  let lx = sun.x - ccx, ly = sun.y - ccy; const ll = Math.hypot(lx, ly) || 1; lx /= ll; ly /= ll;
+  const bTop = clamp(.35 + .75 * -ly, .2, 1), bSide = clamp(.25 + .75 * lx, .12, 1), bFront = .62;
+  const blue = [53, 99, 214], face = b => rgb(blue.map(v => Math.round(v * (.3 + .7 * b) + 255 * Math.max(0, b - .85) * .8)));
+  const pth = pts => { ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); };
+  ctx.lineJoin = "round"; ctx.strokeStyle = "rgba(20,24,60,.55)"; ctx.lineWidth = 2;
+  pth([[fx1, top], [fx1 + dx, top + dy], [fx2 + dx, top + dy], [fx2, top]]); ctx.fillStyle = face(bTop); ctx.fill(); ctx.stroke();
+  pth([[fx2, top], [fx2 + dx, top + dy], [fx2 + dx, G + dy], [fx2, G]]); ctx.fillStyle = face(bSide); ctx.fill(); ctx.stroke();
+  pth([[fx1, top], [fx2, top], [fx2, G], [fx1, G]]); ctx.fillStyle = face(bFront); ctx.fill(); ctx.stroke();
+
+  drawSun(ctx, sun.x, sun.y, 34);
+
+  if (labels) {
+    bubble(ctx, "brillo", hx + (vx < 0 ? -70 : 70), hy - 46, "#e8a400");
+    bubble(ctx, "sombra propia", cx - vx * r * .55, cy - vy * r * .55 + 4, "#8f1f2a");
+    bubble(ctx, "sombra en el piso", cx + sh / 2 + (sh >= 0 ? 60 : -60), G + 50, "#4a5068");
+    const faces = [["tapa", bTop, [fx1 + dx / 2 + 70, top + dy / 2]], ["costado", bSide, [fx2 + dx / 2, (top + G) / 2 + dy / 2]], ["frente", bFront, [(fx1 + fx2) / 2, (top + G) / 2]]];
+    faces.sort((a, b) => b[1] - a[1]);
+    bubble(ctx, "más luz", faces[0][2][0], faces[0][2][1], "#e8a400");
+    bubble(ctx, "más oscuro", faces[2][2][0], faces[2][2][1] + 10, "#3d3650");
+  }
+}
+function drawLight() {
+  const ctx = lightCv.getContext("2d"); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, CW, CH);
+  renderLight(ctx, sunPos, $("light-labels").checked);
+  let m;
+  if (sunPos.y > 205) m = "El sol está bajito, como en la tarde: ¡las sombras se estiran y se hacen largas!";
+  else if (sunPos.y < 95) m = "El sol está muy alto, como al mediodía: las sombras son cortitas.";
+  else m = "Mueve el sol y mira cómo cambian el brillo y las sombras.";
+  if (sunPos.x < 300) m += " La luz viene de la izquierda, así que la sombra se va a la derecha.";
+  else if (sunPos.x > 760) m += " La luz viene de la derecha, así que la sombra se va a la izquierda.";
+  $("light-msg").textContent = m;
+}
+function dragOn(canvas, onMove) {
+  let down = false;
+  const pt = e => { const r = canvas.getBoundingClientRect(); return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H }; };
+  canvas.style.touchAction = "none";
+  canvas.addEventListener("pointerdown", e => { down = true; try { canvas.setPointerCapture(e.pointerId); } catch (err) {} onMove(pt(e)); });
+  canvas.addEventListener("pointermove", e => { if (down) onMove(pt(e)); });
+  ["pointerup", "pointercancel"].forEach(t => canvas.addEventListener(t, () => down = false));
+}
+dragOn(lightCv, p => { sunPos = { x: clamp(p.x, 40, 960), y: clamp(p.y, 40, 250) }; drawLight(); });
+$("light-labels").addEventListener("change", drawLight);
+
+/* ============================================================
+   Perspective lab: drag the vanishing point.
+   ============================================================ */
+const perspCv = $("cv-persp"); perspCv.width = CW; perspCv.height = CH;
+let vp = { x: 560, y: 300 };
+const BOXES = [
+  { r: [110, 450, 270, 580], c: [229, 72, 77] }, { r: [420, 500, 570, 630], c: [63, 174, 106] }, { r: [730, 430, 880, 560], c: [53, 99, 214] },
+  { r: [140, 110, 270, 210], c: [245, 131, 42] }, { r: [720, 100, 850, 200], c: [139, 92, 246] }
+];
+function renderPersp(ctx, v, lines) {
+  scaleTo(ctx);
+  ctx.fillStyle = "#cfe9fb"; ctx.fillRect(0, 0, W, v.y);
+  ctx.fillStyle = "#d9efc6"; ctx.fillRect(0, v.y, W, H - v.y);
+  ctx.strokeStyle = "#5b6080"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0, v.y); ctx.lineTo(W, v.y); ctx.stroke();
+  const t = .3, V = [v.x, v.y];
+  for (const b of BOXES) {
+    const [x1, y1, x2, y2] = b.r;
+    const a = [x1, y1], bb = [x2, y1], c = [x2, y2], d = [x1, y2];
+    const [a2, b2, c2, d2] = [a, bb, c, d].map(p => lerpPt(p, V, t));
+    if (lines) {
+      ctx.save(); ctx.strokeStyle = "rgba(229,72,77,.45)"; ctx.lineWidth = 1.5; ctx.setLineDash([6, 7]);
+      for (const p of [a, bb, c, d]) { ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(v.x, v.y); ctx.stroke(); }
+      ctx.restore();
+    }
+    const col = k => rgb(b.c.map(x => Math.round(Math.min(255, x * k + (k > 1 ? 60 : 0)))));
+    const face = (pts, fill) => { ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = "rgba(30,30,50,.7)"; ctx.lineWidth = 2.5; ctx.stroke(); };
+    if (v.y < y1) face([a, bb, b2, a2], col(1.15));
+    if (v.y > y2) face([d, c, c2, d2], col(.55));
+    if (v.x < x1) face([a, d, d2, a2], col(.75));
+    if (v.x > x2) face([bb, c, c2, b2], col(.6));
+    face([a, bb, c, d], col(.95));
+  }
+  ctx.fillStyle = "#e5484d"; ctx.beginPath(); ctx.arc(v.x, v.y, 14, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = "#fff"; ctx.lineWidth = 3; ctx.stroke();
+  bubble(ctx, "punto de fuga", clamp(v.x, 110, 890), v.y - 40 < 24 ? v.y + 40 : v.y - 40, "#e5484d");
+}
+function drawPersp() {
+  const ctx = perspCv.getContext("2d"); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, CW, CH);
+  renderPersp(ctx, vp, $("persp-lines").checked);
+  let m = vp.y < 230 ? "Tus ojos están bajitos: ves la panza de las cajas que están arriba y la tapa casi no se ve."
+    : vp.y > 470 ? "Tus ojos están muy altos, como desde un avión: ves la tapa de casi todas las cajas."
+    : "Las cajas debajo del horizonte muestran la tapa; las de arriba muestran la panza.";
+  m += vp.x < 330 ? " El punto está a la izquierda: ves el costado izquierdo." : vp.x > 670 ? " El punto está a la derecha: ves el costado derecho." : "";
+  $("persp-msg").textContent = m;
+}
+dragOn(perspCv, p => { vp = { x: clamp(p.x, 20, 980), y: clamp(p.y, 40, 660) }; drawPersp(); });
+$("persp-lines").addEventListener("change", drawPersp);
+
+/* ============================================================
+   Little things
+   ============================================================ */
+let toastT = 0;
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2200); }
+function confetti() {
+  if (reduceMotion) return;
+  const c = $("confetti"); c.hidden = false; c.width = innerWidth; c.height = innerHeight;
+  const x = c.getContext("2d"), parts = Array.from({ length: 140 }, () => ({
+    x: innerWidth / 2, y: innerHeight / 3, vx: (Math.random() - .5) * 14, vy: -Math.random() * 12 - 4,
+    s: 6 + Math.random() * 8, c: COLORS[3 + Math.floor(Math.random() * 9)], r: Math.random() * 6
+  }));
+  const t0 = performance.now();
+  const step = now => {
+    x.clearRect(0, 0, c.width, c.height);
+    for (const p of parts) { p.vy += .35; p.x += p.vx; p.y += p.vy; p.r += .1; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); x.restore(); }
+    if (now - t0 < 2200) requestAnimationFrame(step); else c.hidden = true;
+  };
+  requestAnimationFrame(step);
+}
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") { $("viewer").hidden = true; }
+  if ((e.ctrlKey || e.metaKey) && e.key === "z" && view === "studio") { e.preventDefault(); $("undo").click(); }
+});
+
+renderHome();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (view === "home") renderHome(); });
+})();
+</script>
+</body>
+</html>

@@ -310,7 +310,8 @@ body::after {
   position: absolute; top: -6px; right: -6px; min-width: 24px; height: 24px; border-radius: 999px; border: 0;
   background: #e5484d; color: #ffffff; font-size: 12px; font-weight: 800; padding: 0 6px; line-height: 24px;
 }
-.seg.seg4 { grid-template-columns: 1fr 1fr; border-radius: 22px; }
+.seg.seg4 { grid-template-columns: repeat(3, minmax(0, 1fr)); border-radius: 22px; }
+.seg.seg4 button { font-size: 15px; padding: 0 4px; }
 .acts { display: flex; flex-wrap: wrap; gap: 8px; }
 .acts .btn[disabled] { opacity: .35; }
 </style>
@@ -370,7 +371,7 @@ body::after {
   <section class="unit">
     <div class="unit-head"><div class="unit-num">4</div><div>
       <h2>Construir con bloques</h2>
-      <p>Haz bloques de muchas formas, píntalos a tu gusto y úsalos para construir una casa, un edificio o un carro.</p>
+      <p>Haz bloques de muchas formas, píntalos a tu gusto y úsalos para construir casas, castillos, trenes, barcos, cohetes, robots, árboles y jardines.</p>
     </div></div>
     <div class="cards" id="cards-bloques"></div>
   </section>
@@ -561,10 +562,6 @@ body::after {
     <aside class="guide-card">
       <div class="step-label">¿Qué vas a construir?</div>
       <div class="seg seg4" id="reto-seg" role="group" aria-label="Reto">
-        <button type="button" data-reto="casa">Casa</button>
-        <button type="button" data-reto="edificio">Edificio</button>
-        <button type="button" data-reto="carro">Carro</button>
-        <button type="button" data-reto="libre">Libre</button>
       </div>
       <p class="say" id="build-msg" style="font-size:21px"></p>
       <div class="step-label">Mi caja · toca un bloque para sacarlo</div>
@@ -1286,7 +1283,12 @@ const SHAPES = [
   { id: "circulo", name: "Círculo", art: "un círculo", a: 1 },
   { id: "arco", name: "Arco", art: "un arco", a: .7 },
   { id: "trapecio", name: "Trapecio", art: "un trapecio", a: 2.2 },
-  { id: "estrella", name: "Estrella", art: "una estrella", a: 1 }
+  { id: "estrella", name: "Estrella", art: "una estrella", a: 1 },
+  { id: "ovalo", name: "Óvalo", art: "un óvalo", a: 1.6 },
+  { id: "rombo", name: "Rombo", art: "un rombo", a: .8 },
+  { id: "hexagono", name: "Hexágono", art: "un hexágono", a: 1.15 },
+  { id: "corazon", name: "Corazón", art: "un corazón", a: 1.1 },
+  { id: "nube", name: "Nube", art: "una nube", a: 1.8 }
 ];
 const SH = Object.fromEntries(SHAPES.map(s => [s.id, s]));
 const PATTERNS = [["liso", "Liso"], ["ladrillos", "Ladrillos"], ["tejas", "Tejas"], ["madera", "Madera"], ["ventanas", "Ventanas"], ["cruz", "Ventana"], ["rayas", "Rayas"], ["puntos", "Puntos"], ["rueda", "Rueda"]];
@@ -1300,6 +1302,24 @@ function shapePath(ctx, s, w, h) {
   else if (s === "circulo") ctx.ellipse(0, 0, w / 2, h / 2, 0, 0, Math.PI * 2);
   else if (s === "arco") { const ry = Math.min(w / 2, h / 2); ctx.moveTo(x, y + h); ctx.lineTo(x, y + ry); ctx.ellipse(0, y + ry, w / 2, ry, 0, Math.PI, Math.PI * 2); ctx.lineTo(x + w, y + h); ctx.closePath(); }
   else if (s === "trapecio") { ctx.moveTo(x, y + h); ctx.lineTo(x + w * .2, y); ctx.lineTo(x + w * .8, y); ctx.lineTo(x + w, y + h); ctx.closePath(); }
+  else if (s === "ovalo") ctx.ellipse(0, 0, w / 2, h / 2, 0, 0, Math.PI * 2);
+  else if (s === "rombo") { ctx.moveTo(0, y); ctx.lineTo(x + w, 0); ctx.lineTo(0, y + h); ctx.lineTo(x, 0); ctx.closePath(); }
+  else if (s === "hexagono") { ctx.moveTo(x + w * .25, y); ctx.lineTo(x + w * .75, y); ctx.lineTo(x + w, 0); ctx.lineTo(x + w * .75, y + h); ctx.lineTo(x + w * .25, y + h); ctx.lineTo(x, 0); ctx.closePath(); }
+  else if (s === "corazon") {
+    ctx.moveTo(0, y + h * .3);
+    ctx.bezierCurveTo(0, y, x, y, x, y + h * .32);
+    ctx.bezierCurveTo(x, y + h * .62, 0, y + h * .8, 0, y + h);
+    ctx.bezierCurveTo(0, y + h * .8, x + w, y + h * .62, x + w, y + h * .32);
+    ctx.bezierCurveTo(x + w, y, 0, y, 0, y + h * .3); ctx.closePath();
+  }
+  else if (s === "nube") {
+    ctx.moveTo(x + w * .14, y + h);
+    ctx.bezierCurveTo(x - w * .04, y + h, x - w * .03, y + h * .42, x + w * .2, y + h * .48);
+    ctx.bezierCurveTo(x + w * .18, y + h * .05, x + w * .52, y - h * .04, x + w * .56, y + h * .3);
+    ctx.bezierCurveTo(x + w * .66, y + h * .02, x + w * .98, y + h * .14, x + w * .86, y + h * .5);
+    ctx.bezierCurveTo(x + w * 1.04, y + h * .55, x + w * 1.03, y + h, x + w * .86, y + h);
+    ctx.closePath();
+  }
   else if (s === "estrella") {
     for (let i = 0; i < 10; i++) {
       const ang = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? .45 : 1;
@@ -1392,7 +1412,21 @@ const STARTERS = [
   { key: "auto", shape: "rectangulo", color: "#3563d6", pat: "liso" },
   { key: "cabina", shape: "trapecio", color: "#4fb3e8", pat: "liso" },
   { key: "rueda", shape: "circulo", color: "#2b2730", pat: "rueda" },
-  { key: "estrella", shape: "estrella", color: "#f7c948", pat: "puntos" }
+  { key: "estrella", shape: "estrella", color: "#f7c948", pat: "puntos" },
+  { key: "copa", shape: "nube", color: "#3fae6a", pat: "puntos" },
+  { key: "tronco", shape: "rectangulo", color: "#8a5a3b", pat: "madera" },
+  { key: "manzana", shape: "circulo", color: "#e5484d", pat: "liso" },
+  { key: "pino", shape: "triangulo", color: "#2f9a5c", pat: "rayas" },
+  { key: "arbusto", shape: "nube", color: "#9bd46b", pat: "puntos" },
+  { key: "tallo", shape: "rectangulo", color: "#3fae6a", pat: "liso" },
+  { key: "flor", shape: "estrella", color: "#f27bb4", pat: "puntos" },
+  { key: "hoja", shape: "ovalo", color: "#9bd46b", pat: "rayas" },
+  { key: "nube", shape: "nube", color: "#ffffff", pat: "liso" },
+  { key: "corazon", shape: "corazon", color: "#f27bb4", pat: "liso" },
+  { key: "vela", shape: "triangulo", color: "#e5484d", pat: "rayas" },
+  { key: "casco", shape: "trapecio", color: "#8a5a3b", pat: "madera" },
+  { key: "metal", shape: "cuadrado", color: "#9aa0b5", pat: "puntos" },
+  { key: "portilla", shape: "circulo", color: "#4fb3e8", pat: "cruz" }
 ];
 let starterBlocks = null;
 function starters() {
@@ -1561,7 +1595,7 @@ function openMaker() { renderShapeButtons(); renderPatternButtons(); renderTray(
 /* ---------- builder ---------- */
 const GROUND = 600;
 const RETOS = {
-  casa: { title: "una casa", save: "Mi casa", slots: [
+  casa: { title: "una casa", label: "Casa", save: "Mi casa", slots: [
     { shape: ["cuadrado", "rectangulo"], c: [480, 450], w: 300, h: 300, hint: "las paredes", demo: "pared" },
     { shape: ["triangulo"], c: [480, 225], w: 360, h: 150, hint: "el techo", demo: "techo" },
     { shape: ["arco", "rectangulo"], c: [480, 525], w: 80, h: 150, hint: "la puerta", demo: "puerta" },
@@ -1569,7 +1603,7 @@ const RETOS = {
     { shape: ["cuadrado"], c: [570, 410], w: 70, h: 70, hint: "la otra ventana", demo: "ventana" },
     { shape: ["rectangulo", "cuadrado"], c: [575, 225], w: 40, h: 90, hint: "la chimenea", demo: "chimenea", back: true }
   ]},
-  edificio: { title: "un edificio", save: "Mi edificio", slots: [
+  edificio: { title: "un edificio", label: "Edificio", save: "Mi edificio", slots: [
     { shape: ["rectangulo", "cuadrado"], c: [480, 390], w: 240, h: 420, hint: "la torre", demo: "auto" },
     { shape: ["semicirculo"], c: [480, 150], w: 160, h: 60, hint: "la cúpula de arriba", demo: "cupula" },
     { shape: ["arco", "rectangulo"], c: [480, 550], w: 70, h: 100, hint: "la puerta", demo: "puerta" },
@@ -1580,7 +1614,7 @@ const RETOS = {
     { shape: ["cuadrado"], c: [420, 430], w: 55, h: 55, hint: "otra ventana", demo: "ventana" },
     { shape: ["cuadrado"], c: [540, 430], w: 55, h: 55, hint: "la última ventana", demo: "ventana" }
   ]},
-  carro: { title: "un carro", save: "Mi carro", slots: [
+  carro: { title: "un carro", label: "Carro", save: "Mi carro", slots: [
     { shape: ["rectangulo"], c: [480, 470], w: 420, h: 110, hint: "el cuerpo del carro", demo: "auto" },
     { shape: ["trapecio"], c: [470, 375], w: 240, h: 80, hint: "la cabina de arriba", demo: "cabina" },
     { shape: ["cuadrado", "rectangulo"], c: [420, 384], w: 56, h: 44, hint: "una ventana", demo: "ventana" },
@@ -1588,6 +1622,77 @@ const RETOS = {
     { shape: ["circulo"], c: [360, 540], w: 110, h: 110, hint: "una rueda", demo: "rueda" },
     { shape: ["circulo"], c: [600, 540], w: 110, h: 110, hint: "la otra rueda", demo: "rueda" },
     { shape: ["circulo", "semicirculo", "estrella"], c: [680, 445], w: 34, h: 34, hint: "el farol de adelante", demo: "estrella" }
+  ]},
+  castillo: { title: "un castillo", label: "Castillo", save: "Mi castillo", slots: [
+    { shape: ["rectangulo", "cuadrado"], c: [480, 480], w: 440, h: 240, hint: "la muralla", demo: "chimenea" },
+    { shape: ["rectangulo"], c: [290, 420], w: 100, h: 360, hint: "la torre de la izquierda", demo: "chimenea" },
+    { shape: ["rectangulo"], c: [670, 420], w: 100, h: 360, hint: "la torre de la derecha", demo: "chimenea" },
+    { shape: ["triangulo"], c: [290, 195], w: 130, h: 90, hint: "el techo de una torre", demo: "vela" },
+    { shape: ["triangulo"], c: [670, 195], w: 130, h: 90, hint: "el techo de la otra torre", demo: "vela" },
+    { shape: ["arco"], c: [480, 540], w: 110, h: 120, hint: "el portón", demo: "puerta" },
+    { shape: ["cuadrado", "arco"], c: [290, 330], w: 44, h: 44, hint: "una ventana", demo: "ventana" },
+    { shape: ["cuadrado", "arco"], c: [670, 330], w: 44, h: 44, hint: "la otra ventana", demo: "ventana" },
+    { shape: ["estrella", "corazon", "circulo"], c: [480, 410], w: 64, h: 64, hint: "el escudo", demo: "estrella" }
+  ]},
+  tren: { title: "un tren", label: "Tren", save: "Mi tren", slots: [
+    { shape: ["rectangulo"], c: [330, 460], w: 220, h: 140, hint: "la locomotora", demo: "auto" },
+    { shape: ["cuadrado", "rectangulo"], c: [390, 340], w: 110, h: 100, hint: "la cabina", demo: "metal" },
+    { shape: ["rectangulo"], c: [270, 350], w: 40, h: 80, hint: "la chimenea", demo: "chimenea" },
+    { shape: ["cuadrado"], c: [390, 340], w: 50, h: 50, hint: "la ventana", demo: "ventana" },
+    { shape: ["rectangulo"], c: [650, 470], w: 220, h: 120, hint: "el vagón", demo: "torre" },
+    { shape: ["circulo"], c: [270, 550], w: 70, h: 70, hint: "una rueda", demo: "rueda" },
+    { shape: ["circulo"], c: [390, 550], w: 70, h: 70, hint: "otra rueda", demo: "rueda" },
+    { shape: ["circulo"], c: [600, 550], w: 70, h: 70, hint: "otra rueda", demo: "rueda" },
+    { shape: ["circulo"], c: [700, 550], w: 70, h: 70, hint: "la última rueda", demo: "rueda" }
+  ]},
+  barco: { title: "un barco", label: "Barco", save: "Mi barco", water: true, slots: [
+    { shape: ["trapecio"], c: [480, 530], w: 420, h: 100, rot: 180, hint: "el casco (va al revés: ancho arriba)", demo: "casco" },
+    { shape: ["rectangulo", "cuadrado"], c: [430, 440], w: 160, h: 80, hint: "la cabina", demo: "metal" },
+    { shape: ["circulo"], c: [395, 440], w: 40, h: 40, hint: "una ventanita redonda", demo: "portilla" },
+    { shape: ["circulo"], c: [465, 440], w: 40, h: 40, hint: "la otra ventanita", demo: "portilla" },
+    { shape: ["rectangulo"], c: [580, 330], w: 16, h: 280, hint: "el mástil", demo: "tronco" },
+    { shape: ["triangulo"], c: [645, 320], w: 110, h: 200, hint: "la vela", demo: "vela" }
+  ]},
+  cohete: { title: "un cohete", label: "Cohete", save: "Mi cohete", slots: [
+    { shape: ["rectangulo"], c: [480, 390], w: 140, h: 300, hint: "el cuerpo del cohete", demo: "auto" },
+    { shape: ["triangulo"], c: [480, 180], w: 140, h: 120, hint: "la punta", demo: "vela" },
+    { shape: ["circulo"], c: [480, 320], w: 70, h: 70, hint: "la ventana redonda", demo: "portilla" },
+    { shape: ["triangulo", "trapecio"], c: [385, 490], w: 60, h: 110, hint: "una aleta", demo: "vela" },
+    { shape: ["triangulo", "trapecio"], c: [575, 490], w: 60, h: 110, hint: "la otra aleta", demo: "vela" },
+    { shape: ["estrella", "semicirculo", "circulo"], c: [480, 575], w: 100, h: 60, hint: "el fuego", demo: "estrella" }
+  ]},
+  robot: { title: "un robot", label: "Robot", save: "Mi robot", slots: [
+    { shape: ["cuadrado", "rectangulo"], c: [480, 420], w: 220, h: 220, hint: "el cuerpo", demo: "metal" },
+    { shape: ["cuadrado", "rectangulo"], c: [480, 240], w: 150, h: 130, hint: "la cabeza", demo: "metal" },
+    { shape: ["circulo"], c: [445, 230], w: 36, h: 36, hint: "un ojo", demo: "portilla" },
+    { shape: ["circulo"], c: [515, 230], w: 36, h: 36, hint: "el otro ojo", demo: "portilla" },
+    { shape: ["estrella", "circulo"], c: [480, 150], w: 40, h: 40, hint: "la antena", demo: "estrella" },
+    { shape: ["rectangulo"], c: [325, 400], w: 90, h: 34, hint: "un brazo", demo: "chimenea" },
+    { shape: ["rectangulo"], c: [635, 400], w: 90, h: 34, hint: "el otro brazo", demo: "chimenea" },
+    { shape: ["rectangulo"], c: [430, 565], w: 50, h: 70, hint: "una pierna", demo: "chimenea" },
+    { shape: ["rectangulo"], c: [530, 565], w: 50, h: 70, hint: "la otra pierna", demo: "chimenea" },
+    { shape: ["corazon", "estrella", "hexagono"], c: [480, 420], w: 70, h: 62, hint: "el corazón del robot", demo: "corazon" }
+  ]},
+  arbol: { title: "un árbol", label: "Árbol", save: "Mi árbol", slots: [
+    { shape: ["rectangulo"], c: [420, 500], w: 70, h: 200, hint: "el tronco", demo: "tronco" },
+    { shape: ["nube", "circulo", "ovalo"], c: [420, 320], w: 300, h: 220, hint: "la copa con hojas", demo: "copa" },
+    { shape: ["circulo"], c: [355, 300], w: 40, h: 40, hint: "una manzana", demo: "manzana" },
+    { shape: ["circulo"], c: [480, 330], w: 40, h: 40, hint: "otra manzana", demo: "manzana" },
+    { shape: ["circulo"], c: [410, 385], w: 40, h: 40, hint: "la última manzana", demo: "manzana" },
+    { shape: ["nube"], c: [760, 150], w: 200, h: 100, hint: "una nube en el cielo", demo: "nube" }
+  ]},
+  jardin: { title: "un jardín", label: "Jardín", save: "Mi jardín", slots: [
+    { shape: ["rectangulo"], c: [220, 560], w: 30, h: 80, hint: "el tronco del pino", demo: "tronco" },
+    { shape: ["triangulo"], c: [220, 480], w: 170, h: 95, hint: "las ramas de abajo del pino", demo: "pino" },
+    { shape: ["triangulo"], c: [220, 415], w: 135, h: 85, hint: "las ramas del medio", demo: "pino" },
+    { shape: ["triangulo"], c: [220, 358], w: 100, h: 72, hint: "la punta del pino", demo: "pino" },
+    { shape: ["nube", "ovalo", "semicirculo"], c: [470, 555], w: 210, h: 95, hint: "un arbusto", demo: "arbusto" },
+    { shape: ["rectangulo"], c: [700, 540], w: 12, h: 120, hint: "el tallo de una flor", demo: "tallo" },
+    { shape: ["ovalo", "rombo"], c: [728, 548], w: 44, h: 24, hint: "una hojita", demo: "hoja" },
+    { shape: ["estrella", "circulo", "corazon", "hexagono"], c: [700, 470], w: 76, h: 76, hint: "la flor", demo: "flor" },
+    { shape: ["rectangulo"], c: [840, 550], w: 12, h: 100, hint: "el tallo de otra flor", demo: "tallo" },
+    { shape: ["estrella", "circulo", "corazon", "hexagono"], c: [840, 490], w: 64, h: 64, hint: "la otra flor", demo: "flor" },
+    { shape: ["nube"], c: [560, 150], w: 190, h: 95, hint: "una nube", demo: "nube" }
   ]}
 };
 let obra = store.get("taller.obra", null);
@@ -1613,13 +1718,14 @@ function renderScene(ctx, items, opts) {
   const sky = ctx.createLinearGradient(0, 0, 0, GROUND);
   sky.addColorStop(0, "#a9d8fb"); sky.addColorStop(1, "#e9f6ff");
   ctx.fillStyle = sky; ctx.fillRect(0, 0, W, GROUND);
-  ctx.fillStyle = "#9bd46b"; ctx.fillRect(0, GROUND, W, H - GROUND);
-  ctx.fillStyle = "#7fbf55"; ctx.fillRect(0, GROUND, W, 6);
+  const water = RETOS[opts.reto] && RETOS[opts.reto].water;
+  ctx.fillStyle = water ? "#5ab8e8" : "#9bd46b"; ctx.fillRect(0, water ? 520 : GROUND, W, H - (water ? 520 : GROUND));
+  ctx.fillStyle = water ? "#3f9fd4" : "#7fbf55"; ctx.fillRect(0, water ? 520 : GROUND, W, 6);
   if (opts.light) drawSun(ctx, 95, 85, 32);
   const reto = RETOS[opts.reto];
   if (opts.ghost && reto) reto.slots.forEach((s, i) => {
     if (slotFilled(i)) return;
-    ctx.save(); ctx.translate(s.c[0], s.c[1]); shapePath(ctx, s.shape[0], s.w, s.h);
+    ctx.save(); ctx.translate(s.c[0], s.c[1]); ctx.rotate((s.rot || 0) * Math.PI / 180); shapePath(ctx, s.shape[0], s.w, s.h);
     ctx.fillStyle = "rgba(47,91,216,.09)"; ctx.fill();
     ctx.setLineDash([12, 9]); ctx.lineWidth = 3.5; ctx.strokeStyle = "#2f5bd8"; ctx.stroke(); ctx.restore();
   });
@@ -1692,7 +1798,7 @@ function trySnap(it) {
     if (d < lim && (!best || d < best.d)) best = { i, d, s };
   });
   if (!best) return;
-  Object.assign(it, { cx: best.s.c[0], cy: best.s.c[1], w: best.s.w, h: best.s.h, rot: 0, slot: best.i });
+  Object.assign(it, { cx: best.s.c[0], cy: best.s.c[1], w: best.s.w, h: best.s.h, rot: best.s.rot || 0, flip: false, slot: best.i });
   if (reto.slots.every((_, i) => slotFilled(i))) {
     const id = "bloques-" + obra.reto, first = !stars[id];
     stars[id] = true; store.set("taller.estrellas", stars); updateStars();
@@ -1719,10 +1825,14 @@ function updateBuildUI() {
   $("build-title").textContent = "Construye " + reto.title;
   const n = reto.slots.length, done = reto.slots.filter((_, i) => slotFilled(i)).length;
   const next = reto.slots.findIndex((_, i) => !slotFilled(i));
-  if (next < 0) { msg.textContent = `¡Terminaste ${reto.title}! Puedes decorarla con más bloques.`; return; }
+  if (next < 0) { msg.textContent = `¡Terminaste ${reto.title}! Puedes seguir decorando con más bloques.`; return; }
   const s = reto.slots[next];
   msg.textContent = `${done} de ${n} piezas. Busca ${SH[s.shape[0]].art} para ${s.hint} y arrástralo a la línea punteada.`;
 }
+Object.keys(RETOS).concat("libre").forEach(k => {
+  const b = document.createElement("button"); b.type = "button"; b.dataset.reto = k;
+  b.textContent = k === "libre" ? "Libre" : RETOS[k].label; $("reto-seg").appendChild(b);
+});
 document.querySelectorAll("[data-reto]").forEach(b => b.addEventListener("click", () => {
   if (obra.reto === b.dataset.reto) return;
   obra.reto = b.dataset.reto; obra.items.forEach(it => it.slot = null); sel = null;
@@ -1762,7 +1872,7 @@ function openReto(r) { if (obra.reto !== r) { obra.reto = r; obra.items.forEach(
 function demoItems(key) {
   const st = Object.fromEntries(starters().map(b => [b.id.slice(2), b]));
   const slots = RETOS[key].slots.slice().sort((a, b) => (b.back ? 1 : 0) - (a.back ? 1 : 0));
-  return slots.map(s => ({ id: "", shape: st[s.demo].shape, img: st[s.demo].canvas, cx: s.c[0], cy: s.c[1], w: s.w, h: s.h, rot: 0, flip: false }));
+  return slots.map(s => ({ id: "", shape: st[s.demo].shape, img: st[s.demo].canvas, cx: s.c[0], cy: s.c[1], w: s.w, h: s.h, rot: s.rot || 0, flip: false }));
 }
 function renderBlockCards() {
   const box = $("cards-bloques"); box.innerHTML = "";
@@ -1772,12 +1882,12 @@ function renderBlockCards() {
     draw(b.querySelector("canvas").getContext("2d")); b.addEventListener("click", onClick); box.appendChild(b);
   };
   card("Mis bloques", "Elige la forma y píntala", ctx => {
-    const st = starters(), pos = [[150, 110], [330, 100], [520, 110], [720, 110], [870, 120], [160, 320], [360, 330], [560, 320], [760, 320], [260, 530], [620, 530]];
+    const st = starters().slice(0, 25), cols = 5;
     scaleTo(ctx); ctx.fillStyle = "#f1eef8"; ctx.fillRect(0, 0, W, H);
-    st.forEach((b, i) => { const [w, h] = blockSize(b.shape, 150); ctx.save(); ctx.translate(pos[i][0], pos[i][1]); ctx.rotate((i % 3 - 1) * .12); ctx.drawImage(b.canvas, -w / 2, -h / 2, w, h); ctx.restore(); });
+    st.forEach((b, i) => { const [w, h] = blockSize(b.shape, 110); ctx.save(); ctx.translate(110 + (i % cols) * 195, 75 + Math.floor(i / cols) * 137); ctx.rotate((i % 3 - 1) * .12); ctx.drawImage(b.canvas, -w / 2, -h / 2, w, h); ctx.restore(); });
   }, () => show("blocks"), null, "Primero");
-  [["casa", "Construye una casa"], ["edificio", "Construye un edificio"], ["carro", "Construye un carro"]].forEach(([k, t]) =>
-    card(t, RETOS[k].slots.length + " piezas", ctx => renderScene(ctx, demoItems(k), { light: true }), () => openReto(k), "bloques-" + k));
+  Object.keys(RETOS).forEach(k =>
+    card("Construye " + RETOS[k].title, RETOS[k].slots.length + " piezas", ctx => renderScene(ctx, demoItems(k), { light: true, reto: k }), () => openReto(k), "bloques-" + k));
   card("Construcción libre", "Inventa lo que quieras", ctx => {
     const items = demoItems("casa").map(it => ({ ...it, cx: it.cx * .6 + 20, cy: GROUND - (GROUND - it.cy) * .6, w: it.w * .6, h: it.h * .6 }))
       .concat(demoItems("carro").map(it => ({ ...it, cx: it.cx * .55 + 470, cy: GROUND - (GROUND - it.cy) * .55, w: it.w * .55, h: it.h * .55 })));

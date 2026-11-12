@@ -2003,7 +2003,8 @@ function tutorSpeak(text) {
   if (!("speechSynthesis" in window)) { talkFor(Math.min(4500, text.length * 55)); return; }
   try {
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
+    // spelled "Chiara" on screen, but pronounced with a K sound: "Kiara"
+    const u = new SpeechSynthesisUtterance(text.replace(/Chiara/g, "Kiara"));
     u.lang = "es-ES"; u.rate = .95; u.pitch = 1.35;
     const v = speechSynthesis.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith("es"));
     if (v) u.voice = v;

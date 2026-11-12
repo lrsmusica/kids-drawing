@@ -9,6 +9,10 @@ App para que una niña de 7 años aprenda a dibujar paso a paso, en tres unidade
 
 Cada lección tiene un modo **Calcar** (línea punteada para seguir) y un modo **Copiar** (dibujar mirando el modelo). También incluye la herramienta **Sombra**, que se oscurece con cada pasada como un lápiz de grafito, una voz que lee los pasos, una galería y dibujo libre.
 
+## Tigrecito
+
+Un cachorro de felino naranja con manchas, sentado sobre un bloque rosado, es el profe: aparece en la esquina, le habla a Chiara por su nombre, le explica cada paso, la felicita y le da trucos. Si se activa "Tigrecito habla en voz alta", lo dice con la voz del dispositivo. Al tocarlo repite la instrucción o da una idea.
+
 ## Cómo usarla
 
 Abre `index.html` en el navegador de una tablet o un computador. No necesita servidor ni internet, salvo para cargar las fuentes. Los dibujos y las estrellas se guardan solo en ese navegador.

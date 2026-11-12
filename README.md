@@ -16,3 +16,16 @@ Un cachorro de felino naranja con manchas, sentado sobre un bloque rosado, es el
 ## Cómo usarla
 
 Abre `index.html` en el navegador de una tablet o un computador. No necesita servidor ni internet, salvo para cargar las fuentes. Los dibujos y las estrellas se guardan solo en ese navegador.
+
+---
+
+# Taller de Costura (`costura/`)
+
+App para que Malí aprenda a coser a mano, con la misma interfaz de vidrio que el Taller de Dibujo y una estética de ilustración de moda (colores pastel con contorno de tinta). La guía es **Malí, la costurera**, un dibujo de ella misma con una cinta métrica al cuello.
+
+1. **Antes de coser**: los materiales (aguja de punta roma, hilo de bordar, fieltro, tijeras, alfiletero, dedal, bastidor, botones, relleno y tiza), enhebrar la aguja (con un minijuego) y hacer el nudo.
+2. **Las puntadas**: se practican con el dedo tocando los puntos en orden, "sube" y "baja": puntada recta, pespunte, festón, punto de cruz y pegar un botón. Se puede ver el revés de la tela y pedir una demostración.
+3. **Proyectos de verdad**: marcalibros, pegar un botón, corazón relleno, monedero y bordar la inicial, paso a paso. Al terminar se sube una foto a la galería.
+4. **Taller de moda**: viste un maniquí con prendas y elige color y tela; se guarda el diseño en la galería.
+
+Se abre en `costura/index.html` (en Netlify: `/costura/`).
